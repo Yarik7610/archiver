@@ -13,13 +13,10 @@ pub fn run(filename: &String) -> Result<(), Box<dyn Error>> {
     let heap = encoder::build_min_heap(&map);
     let root = encoder::create_huffman_tree(heap);
     let codes = encoder::get_codes(&root);
-    // println!("{:#?}", map);
-    // println!("{:#?}", codes);
-    // println!("{:#?}", root);
-    let encoded_size = encoder::encode_text(&codes, &input_contents)?;
+    let (encoded_size, extra_bits) = encoder::encode_text(&codes, &input_contents)?;
     println!("New file size in bytes: {}", encoded_size);
-    let decoded_text = decoder::decode(&root)?;
-    println!("The decoded text of huffmans_output: {}", decoded_text);
+    let decoded_text = decoder::decode(&root, extra_bits)?;
+    decoder::write_to_file(decoded_text)?;
     Ok(())
 }
 

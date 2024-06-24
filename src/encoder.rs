@@ -71,7 +71,7 @@ pub fn get_codes(root: &Option<Node>) -> HashMap<char, String> {
 pub fn encode_text(
     codes: &HashMap<char, String>,
     file_contents: &String,
-) -> Result<String, Box<dyn Error>> {
+) -> Result<(String, usize), Box<dyn Error>> {
     let mut output: Vec<u8> = vec![];
     //8 bits will be stored in 1 byte, as one char, but the will mean more than 1 char mostly
     let mut current_byte: u8 = 0;
@@ -97,7 +97,8 @@ pub fn encode_text(
     if num_bits > 0 {
         output.push(current_byte);
     }
-    let mut f = File::create("huffmans_output.bin")?;
+    let mut f = File::create("huffmans_encoded.bin")?;
     f.write_all(&output)?;
-    Ok(output.len().to_string())
+    //8 - num_bits = 8 - real_bits_amount = extra_bits
+    Ok((output.len().to_string(), 8 - num_bits))
 }
